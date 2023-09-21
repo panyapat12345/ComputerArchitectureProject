@@ -3,7 +3,7 @@ import java.io.IOException;
 public class Main {
     public static void main(String[] args) {
         try {
-            String fileName = "test3.txt";  // Replace with the actual file path
+            String fileName = "test2.txt";  // Replace with the actual file path
             String program = ReadFile.readFile(fileName);
 
             ExprTokenizer tokenizer = new ExprTokenizer(program);
