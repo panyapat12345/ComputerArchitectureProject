@@ -199,13 +199,7 @@ public class Simulator {
 
     public static void main(String[] args) {
         String readPath = "src/mechineCode.txt";
-//        System.out.println("Read  : " + readPath);
         simulate(readPath);
-
-
-/*
-        for(int i=0; i< state.numMemory; i++){ }
-*/
     }
 
     private static void exit(int type){
