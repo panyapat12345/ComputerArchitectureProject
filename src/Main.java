@@ -1,22 +1,23 @@
 import java.io.IOException;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
         try {
             String fileName = "test2.txt";  // Replace with the actual file path
-            String program = ReadFile.readFile(fileName);
+            List<String> program = ReadFile.readFile(fileName);
 
-            ExprTokenizer tokenizer = new ExprTokenizer(program);
-
-            while (tokenizer.hasNextToken()) {
-                String token = tokenizer.consume();
-                String[] tokens = token.trim().split("\\s+");
-                for (String t : tokens) {
-                    if (!t.isEmpty()) {
-                        System.out.println("Token: " + t);
-                    }
+            for (int i = 0; i < program.size(); i++) {
+                ExprTokenizer tokenizer = new ExprTokenizer(program.get(i));
+                System.out.println("line: " + i );
+                while (tokenizer.hasNextToken()){
+                        System.out.println("Token: " + tokenizer.consume());
+                   
                 }
-            }
+                System.out.println();
+                }
+
+            
         } catch (IOException e) {
             e.printStackTrace();
         } catch (LexicalError | SyntaxError e) {
