@@ -1,0 +1,1 @@
+stamp say hello world
