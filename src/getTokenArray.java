@@ -8,21 +8,20 @@ public class getTokenArray {
     private static final String[] O_TYPE_INSTRUCTIONS = {"halt", "noop"};
     private static final String[] fill_INSTRUCTIONS = {".fill"};
 
-    public static String[] getTokenArray(String input) throws SyntaxError {
+
+    public static   String[] getTokenArray(String input) throws SyntaxError {
         List<String> tokenList = new ArrayList<>();
         ExprTokenizer tokenizer = new ExprTokenizer(input);
-
 //        boolean isLabelPresent = false;
         String instructionType = "";
 
         while (tokenizer.hasNextToken()) {
             String token = tokenizer.consume();
-
             if (!token.isEmpty()) {
                 if (isLabel(token)) {
-//                    isLabelPresent = true;
+//              isLabelPresent = true;
                     tokenList.add(token);
-                } else if (Arrays.stream(fill_INSTRUCTIONS).anyMatch(token::equals)) {
+                } else if (Arrays.asList(fill_INSTRUCTIONS).contains(token)) {
                     tokenList.add(token);
                     if (tokenizer.hasNextToken()) {
                         tokenList.add(tokenizer.consume());
@@ -48,7 +47,7 @@ public class getTokenArray {
                 }
             }
         }
-        int expectedTokenCount = Arrays.stream(R_TYPE_INSTRUCTIONS).anyMatch(instructionType::equals) ? 5 : 4;
+        int expectedTokenCount = Arrays.asList(R_TYPE_INSTRUCTIONS).contains(instructionType) ? 5 : 4;
         while (tokenList.size() > expectedTokenCount) {
             tokenList.remove(tokenList.size() - 1);
         }
@@ -59,10 +58,10 @@ public class getTokenArray {
         return token.matches(labelRegex) &&!isInstruction(token);
     }
     private static boolean isInstruction(String token) {
-        return Arrays.stream(R_TYPE_INSTRUCTIONS).anyMatch(token::equals)
-                || Arrays.stream(I_TYPE_INSTRUCTIONS).anyMatch(token::equals)
-                || Arrays.stream(J_TYPE_INSTRUCTIONS).anyMatch(token::equals)
-                || Arrays.stream(O_TYPE_INSTRUCTIONS).anyMatch(token::equals)|| Arrays.stream(fill_INSTRUCTIONS).anyMatch(token::equals);
+        return Arrays.asList(R_TYPE_INSTRUCTIONS).contains(token)
+                || Arrays.asList(I_TYPE_INSTRUCTIONS).contains(token)
+                || Arrays.asList(J_TYPE_INSTRUCTIONS).contains(token)
+                || Arrays.asList(O_TYPE_INSTRUCTIONS).contains(token) || Arrays.stream(fill_INSTRUCTIONS).anyMatch(token::equals);
     }
     private static boolean isInstructionType(String token) throws SyntaxError {
         if (isInstruction(token)) {
@@ -73,15 +72,15 @@ public class getTokenArray {
 
     }
     private static int determineExpectedFields(String instructionType) throws SyntaxError {
-        if (Arrays.stream(R_TYPE_INSTRUCTIONS).anyMatch(instructionType::equals)) {
+        if (Arrays.asList(R_TYPE_INSTRUCTIONS).contains(instructionType)) {
             return 3; // R-Type instructions have 3 fields
-        } else if (Arrays.stream(I_TYPE_INSTRUCTIONS).anyMatch(instructionType::equals)) {
+        } else if (Arrays.asList(I_TYPE_INSTRUCTIONS).contains(instructionType)) {
             return 3; // I-Type instructions have 3 fields
-        } else if (Arrays.stream(J_TYPE_INSTRUCTIONS).anyMatch(instructionType::equals)) {
+        } else if (Arrays.asList(J_TYPE_INSTRUCTIONS).contains(instructionType)) {
             return 2; // J-Type instructions have 2 fields
-        } else if (Arrays.stream(O_TYPE_INSTRUCTIONS).anyMatch(instructionType::equals)) {
+        } else if (Arrays.asList(O_TYPE_INSTRUCTIONS).contains(instructionType)) {
             return 0; // O-Type instructions have 0 fields
-        } else if (Arrays.stream(fill_INSTRUCTIONS).anyMatch(instructionType::equals)) {
+        } else if (Arrays.asList(fill_INSTRUCTIONS).contains(instructionType)) {
             return 1; // .fill directive has 1 field
         } else if (isLabel(instructionType)) {
             return 1; // Labels have 1 field

@@ -1,28 +1,23 @@
 import java.util.NoSuchElementException;
-
 class LexicalError extends RuntimeException {
     public LexicalError(String message) {
         super(message);
     }
 }
-
 class SyntaxError extends RuntimeException {
     public SyntaxError(String message) {
         super(message);
     }
 }
-
 class ExprTokenizer {
     private String src;
     private int pos;
     private String next;
-
     public ExprTokenizer(String src) {
         this.src = src;
         pos = 0;
         computeNext();
     }
-
     private boolean isWhitespace(char c) {
         return c == ' ' || c == '\t';
     }
