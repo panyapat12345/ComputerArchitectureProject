@@ -16,12 +16,12 @@ x7 = return value of the function (ans)
         add 2 3 2       // +1 to stack pointer
         sw 2 6 addr     // push r to stack
 comb    beq 1 2 done    // if stack pointer = 0, done
-        lw 2 6 addr     // top r value from stack
+        lw 2 6 addr     // load top r value from stack
         sw 2 0 addr     // pop stack
         add 2 1 2       // -1 from stack pointer
-        lw 2 5 addr     // top n value from stack
+        lw 2 5 addr     // load top n value from stack
         sw 2 0 addr     // pop stack
-        beq 1 2 base    // if n = r go to base
+        beq 5 6 base    // if n = r go to base
         beq 0 6 base    // if r = 0 go to base
         add 5 1 5       // n -= 1 (combination(n-1,r) here)
         sw 2 5 addr     // push n to stack
@@ -43,6 +43,3 @@ plus1   .fill 1
 addr    .fill 0
 n       .fill input1
 r       .fill input2
-
-
-

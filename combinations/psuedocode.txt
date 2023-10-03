@@ -1,0 +1,12 @@
+INPUT n, r
+SET answer = 0
+PUSH n, r into stack
+LOOP WHILE stack is not empty
+	pop n, r
+	IF n == r or r == 0
+		answer = answer + 1
+	ELSE
+		PUSH n-1, r and n-1, r-1 into stack
+	END IF
+END LOOP
+RETURN answer
