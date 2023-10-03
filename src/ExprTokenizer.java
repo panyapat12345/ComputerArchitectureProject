@@ -1,14 +1,6 @@
 import java.util.NoSuchElementException;
-class LexicalError extends RuntimeException {
-    public LexicalError(String message) {
-        super(message);
-    }
-}
-class SyntaxError extends RuntimeException {
-    public SyntaxError(String message) {
-        super(message);
-    }
-}
+
+
 class ExprTokenizer {
     private String src;
     private int pos;

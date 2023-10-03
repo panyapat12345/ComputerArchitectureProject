@@ -2,6 +2,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
+
+
 public class getTokenArray {
     private static int i, n, lineCounter;
 
@@ -15,7 +18,7 @@ public class getTokenArray {
     private static final String[] fill_INSTRUCTIONS = {".fill"};
 
 
-    private static   String[] getTokenArray(String input) throws SyntaxError {
+    private static   String[] getTokenArrays(String input) throws SyntaxError {
         List<String> tokenList = new ArrayList<>();
         ExprTokenizer tokenizer = new ExprTokenizer(input);
         String instructionType = "";
@@ -39,24 +42,78 @@ public class getTokenArray {
                     tokenList.add(token);
                     //เช็คจำนวนFields
                     int expectedFields = determineExpectedFields(instructionType);
-                    if (expectedFields >= 0) {
-                        for (int i = 0; i < expectedFields; i++) {
-                            token = tokenizer.consume();
-                            if (!token.isEmpty()) {
-                                tokenList.add(token);
+                    try {
+                        if (expectedFields >= 0) {
+                            if (Arrays.asList(R_TYPE_INSTRUCTIONS).contains(instructionType)) {
+                                for (int i = 0; i < 3; i++) {
+                                    token = tokenizer.consume();
+                                    if (!token.isEmpty()) {
+                                        if (!isNumber(token)) {
+                                                throw new SyntaxError("Expected a number for field " + (i + 1) + " in R-type instruction.");
+                                        }
+                                        tokenList.add(token);
+                                    }
+                                }
+                                break;
                             }
+                            else if (Arrays.asList(I_TYPE_INSTRUCTIONS).contains(instructionType)) {
+                                for (int i = 0; i < 3; i++) {
+                                    token = tokenizer.consume();
+                                    if (!token.isEmpty()) {
+                                        if (i < 2) {
+                                            // Check if the token is a number
+                                            if (!isNumber(token)) {
+                                                throw new SyntaxError("Expected a number for field " + (i + 1) + " in I-type instruction.");
+                                            }
+                                        } else {
+                                            // Check if the token is a number or a label
+                                            if (!isNumber(token) && !isLabel(token)) {
+                                                throw new SyntaxError("Expected a number or label for the offset in I-type instruction.");
+                                            }
+                                        }
+                                        tokenList.add(token);
+                                    }
+                                }
+                                break;
+                            }
+                            else if (Arrays.asList(J_TYPE_INSTRUCTIONS).contains(instructionType)) {
+                                for (int i = 0; i < 2; i++) { // Expecting 2 fields for J_TYPE_INSTRUCTIONS
+                                    token = tokenizer.consume();
+                                    if (!token.isEmpty()) {
+                                        // Check if the token is a number
+                                        if (!isNumber(token)) {
+                                            throw new SyntaxError("Expected a number for field " + (i + 1) + " in J-type instruction.");
+                                        }
+                                        tokenList.add(token);
+                                    }
+                                }
+                                break; // Exit the loop after processing the expected fields for J_TYPE_INSTRUCTIONS
+                            }
+
                         }
-                        break;
+                    }catch (NoSuchElementException e){
+                        throw new SyntaxError();
                     }
+
                 }
             }
         }
+
         int expectedTokenCount = Arrays.asList(R_TYPE_INSTRUCTIONS).contains(instructionType) ? 5 : 4;
 
         while (tokenList.size() > expectedTokenCount) {
             tokenList.remove(tokenList.size() - 1);
         }
         return tokenList.toArray(new String[0]);
+    }
+
+    private static boolean isNumber(String token){
+        try {
+            Integer.valueOf(token);
+            return true;
+        } catch (NumberFormatException e){
+            return false;
+        }
     }
     private static boolean isLabel(String token) {
         String labelRegex = "^[a-zA-Z][a-zA-Z0-9]{0,5}$";
@@ -66,7 +123,7 @@ public class getTokenArray {
         return Arrays.asList(R_TYPE_INSTRUCTIONS).contains(token)
                 || Arrays.asList(I_TYPE_INSTRUCTIONS).contains(token)
                 || Arrays.asList(J_TYPE_INSTRUCTIONS).contains(token)
-                || Arrays.asList(O_TYPE_INSTRUCTIONS).contains(token) || Arrays.stream(fill_INSTRUCTIONS).anyMatch(token::equals);
+                || Arrays.asList(O_TYPE_INSTRUCTIONS).contains(token) || Arrays.asList(fill_INSTRUCTIONS).contains(token);
     }
     private static boolean isInstructionType(String token) throws SyntaxError {
         if (checkInstruction(token)) {
@@ -93,11 +150,7 @@ public class getTokenArray {
             throw new SyntaxError("Invalid instruction format. Expected more fields for instruction: " + instructionType);
         }
     }
-    public static class SyntaxError extends Exception {
-        public SyntaxError(String message) {
-            super(message);
-        }
-    }
+
     private static boolean checkInstruction(String token){
         for (String instruction : instructions2){
             if (token.equals(instruction))
@@ -122,7 +175,7 @@ public class getTokenArray {
         }
     }
 
-    private static void printAllInstructions(String[] tokens){
+    public static void printAllInstructions(String[] tokens){
         n = tokens.length;
         lineCounter = 0;
         for (i = 0; i < n;){
@@ -144,29 +197,24 @@ public class getTokenArray {
         }
     }
 
-    public static void getTokens(){
-        try {
-            String fileName = "src/test2.txt";
+    public static String[] getTokens(String src) throws SyntaxError,IOException {
+
+        List<String> tokenresult = new ArrayList<>();
+            String fileName = src;
             List<String> program = ReadFile.readFile(fileName);
-            List<String> tokenresult = new ArrayList<>();
             for (int i = 0; i < program.size(); i++) {
-                String inputLine = program.get(i);
                 try {
-                    String[] tokens = getTokenArray.getTokenArray(inputLine);
-                    for(String T : tokens){
-                        tokenresult.add(T);
-                    }
-                } catch (getTokenArray.SyntaxError e) {
-                    System.err.println("Syntax Error in line " + (i) + ": " + e.getMessage());
+                String inputLine = program.get(i);
+                String[] tokens = getTokenArray.getTokenArrays(inputLine);
+                for(String T : tokens){
+                    tokenresult.add(T);
                 }
+            }catch (SyntaxError e) {
+                throw new SyntaxError("line " + i + ": " + program.get(i));
             }
-            System.out.println(tokenresult);
-            getTokenArray.printAllInstructions(tokenresult.toArray(new String[0]));
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (LexicalError e) {
-            System.err.println("Lexical Error: " + e.getMessage());
-        }
+            }
+
+        return tokenresult.toArray(new String[0]);
     }
 
 
