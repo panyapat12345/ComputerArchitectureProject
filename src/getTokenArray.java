@@ -1,7 +1,13 @@
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 public class getTokenArray {
+    private static int i, n, lineCounter;
+
+
+    private static String[] instructions2 = new String[]{"add", "nand", "lw", "sw", "beq", "jalr", "halt", "noop",".fill"};
+
     private static final String[] R_TYPE_INSTRUCTIONS = {"add", "nand"};
     private static final String[] I_TYPE_INSTRUCTIONS = {"lw", "sw", "beq"};
     private static final String[] J_TYPE_INSTRUCTIONS = {"jalr"};
@@ -9,17 +15,15 @@ public class getTokenArray {
     private static final String[] fill_INSTRUCTIONS = {".fill"};
 
 
-    public static   String[] getTokenArray(String input) throws SyntaxError {
+    private static   String[] getTokenArray(String input) throws SyntaxError {
         List<String> tokenList = new ArrayList<>();
         ExprTokenizer tokenizer = new ExprTokenizer(input);
-//        boolean isLabelPresent = false;
         String instructionType = "";
 
         while (tokenizer.hasNextToken()) {
             String token = tokenizer.consume();
             if (!token.isEmpty()) {
                 if (isLabel(token)) {
-//              isLabelPresent = true;
                     tokenList.add(token);
                 } else if (Arrays.asList(fill_INSTRUCTIONS).contains(token)) {
                     tokenList.add(token);
@@ -48,6 +52,7 @@ public class getTokenArray {
             }
         }
         int expectedTokenCount = Arrays.asList(R_TYPE_INSTRUCTIONS).contains(instructionType) ? 5 : 4;
+
         while (tokenList.size() > expectedTokenCount) {
             tokenList.remove(tokenList.size() - 1);
         }
@@ -64,7 +69,7 @@ public class getTokenArray {
                 || Arrays.asList(O_TYPE_INSTRUCTIONS).contains(token) || Arrays.stream(fill_INSTRUCTIONS).anyMatch(token::equals);
     }
     private static boolean isInstructionType(String token) throws SyntaxError {
-        if (isInstruction(token)) {
+        if (checkInstruction(token)) {
             return true;
         } else {
             throw new SyntaxError("Invalid instruction: " + token);
@@ -93,4 +98,76 @@ public class getTokenArray {
             super(message);
         }
     }
+    private static boolean checkInstruction(String token){
+        for (String instruction : instructions2){
+            if (token.equals(instruction))
+                return true;
+        }
+        return false;
+    }
+
+    private static void printInstruction(String[] tokens){
+        if (tokens[i].equals("add") || tokens[i].equals("nand")){
+            System.out.print(tokens[i] + " " + tokens[i+1] + " " + tokens[i+2] + " " + tokens[i+3]);
+            i += 4;
+        } else if (tokens[i].equals("lw") || tokens[i].equals("sw") || tokens[i].equals("beq")){
+            System.out.print(tokens[i] + " " + tokens[i+1] + " " + tokens[i+2] + " " + tokens[i+3]);
+            i += 4;
+        } else if (tokens[i].equals("jalr")){
+            System.out.print(tokens[i] + " " + tokens[i+1] + " " + tokens[i+2]);
+            i += 3;
+        } else {    // halt, noop
+            System.out.print(tokens[i]);
+            i += 1;
+        }
+    }
+
+    private static void printAllInstructions(String[] tokens){
+        n = tokens.length;
+        lineCounter = 0;
+        for (i = 0; i < n;){
+            if (checkInstruction(tokens[i])) {      // Ins
+                printInstruction(tokens);
+
+            } else {    // Label
+                if (tokens[i+1].equals(".fill")){   // .fill (var|line)
+                    System.out.print(tokens[i] + " " + tokens[i+1] + " " + tokens[i+2]);
+                    i += 3;
+                } else {        // Ins (line)
+                    System.out.print(tokens[i] + " ");
+                    i += 1;
+                    printInstruction(tokens);
+                }
+            }
+            System.out.println();
+            lineCounter++;
+        }
+    }
+
+    public static void getTokens(){
+        try {
+            String fileName = "src/test2.txt";
+            List<String> program = ReadFile.readFile(fileName);
+            List<String> tokenresult = new ArrayList<>();
+            for (int i = 0; i < program.size(); i++) {
+                String inputLine = program.get(i);
+                try {
+                    String[] tokens = getTokenArray.getTokenArray(inputLine);
+                    for(String T : tokens){
+                        tokenresult.add(T);
+                    }
+                } catch (getTokenArray.SyntaxError e) {
+                    System.err.println("Syntax Error in line " + (i) + ": " + e.getMessage());
+                }
+            }
+            System.out.println(tokenresult);
+            getTokenArray.printAllInstructions(tokenresult.toArray(new String[0]));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (LexicalError e) {
+            System.err.println("Lexical Error: " + e.getMessage());
+        }
+    }
+
+
 }
