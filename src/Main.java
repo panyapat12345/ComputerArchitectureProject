@@ -1,12 +1,16 @@
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
-        getTokenArray.getTokens();
+        try {
+            String[] tokens = getTokenArray.getTokens("src/test3.txt");
+            for (String s : tokens)
+                System.out.println(s);
+
+        } catch (SyntaxError | IOException e) {
+            System.err.println(e);
+        }
     }
 
 }
