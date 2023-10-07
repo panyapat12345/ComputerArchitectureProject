@@ -204,14 +204,14 @@ public class getTokenArray {
             List<String> program = ReadFile.readFile(fileName);
             for (int i = 0; i < program.size(); i++) {
                 try {
-                String inputLine = program.get(i);
-                String[] tokens = getTokenArray.getTokenArrays(inputLine);
-                for(String T : tokens){
-                    tokenresult.add(T);
+                    String inputLine = program.get(i);
+                    String[] tokens = getTokenArray.getTokenArrays(inputLine);
+                    for(String T : tokens){
+                        tokenresult.add(T);
+                    }
+                }catch (SyntaxError e) {
+                    throw new SyntaxError("line " + i + ": " + program.get(i));
                 }
-            }catch (SyntaxError e) {
-                throw new SyntaxError("line " + i + ": " + program.get(i));
-            }
             }
 
         return tokenresult.toArray(new String[0]);
