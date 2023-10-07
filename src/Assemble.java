@@ -19,7 +19,7 @@ public class Assemble {
             String[] input = symbolicFiller.getMachineCode(src);
 
             for (int i = 0; i < input.length; i++) {
-
+                System.out.println("line " + i + " : " + input[i]);
                 if (input[i].charAt(0) == 'a') {
                     // System.out.println("R add");
                     String[] words = input[i].split(" ");
@@ -77,7 +77,7 @@ public class Assemble {
                     // binary_rd);
                     String binaryCode = "000" + binary_rs + binary_rt + "0000000000000" + binary_rd;
                     int decimalCode = Integer.parseInt(binaryCode, 2);
-                    System.out.println("R add " + decimalCode);
+                    System.out.println("R add " + decimalCode  + " (" + binaryCode + ")");
                     output.add(decimalCode);
                 } else if (input[i].charAt(0) == 'n' && input[i].charAt(1) == 'a') {
                     // System.out.println("R nand");
@@ -136,7 +136,7 @@ public class Assemble {
                     // binary_rd);
                     String binaryCode = "001" + binary_rs + binary_rt + "0000000000000" + binary_rd;
                     int decimalCode = Integer.parseInt(binaryCode, 2);
-                    System.out.println("R nand " + decimalCode);
+                    System.out.println("R nand " + decimalCode  + " (" + binaryCode + ")");
                     output.add(decimalCode);
                 } else if (input[i].charAt(0) == 'l') {
                     // System.out.println("I lw");
@@ -183,7 +183,7 @@ public class Assemble {
                     // binary_rd);
                     String binaryCode = "010" + binary_rs + binary_rt + binary_rd;
                     int decimalCode = Integer.parseInt(binaryCode, 2);
-                    System.out.println("I lw " + decimalCode);
+                    System.out.println("I lw " + decimalCode + " (" + binaryCode + ")");
                     output.add(decimalCode);
                 } else if (input[i].charAt(0) == 's') {
                     // System.out.println("I sw");
@@ -230,7 +230,7 @@ public class Assemble {
                     // binary_rd);
                     String binaryCode = "011" + binary_rs + binary_rt + binary_rd;
                     int decimalCode = Integer.parseInt(binaryCode, 2);
-                    System.out.println("I sw " + decimalCode);
+                    System.out.println("I sw " + decimalCode  + " (" + binaryCode + ")");
                     output.add(decimalCode);
                 } else if (input[i].charAt(0) == 'b') {
                     // System.out.println("I beq");
@@ -278,7 +278,7 @@ public class Assemble {
                     // binary_rd);
                     String binaryCode = "100" + binary_rs + binary_rt + binary_rd;
                     int decimalCode = Integer.parseInt(binaryCode, 2);
-                    System.out.println("I beq " + decimalCode);
+                    System.out.println("I beq " + decimalCode  + " (" + binaryCode + ")");
                     output.add(decimalCode);
                 } else if (input[i].charAt(0) == 'j') {
                     // System.out.println("j jalr");
@@ -312,7 +312,7 @@ public class Assemble {
                     // binary_rd);
                     String binaryCode = "101" + binary_rs + binary_rt + "0000000000000000";
                     int decimalCode = Integer.parseInt(binaryCode, 2);
-                    System.out.println("J jalr " + decimalCode);
+                    System.out.println("J jalr " + decimalCode  + " (" + binaryCode + ")");
                     output.add(decimalCode);
                 } else if (input[i].charAt(0) == 'h') {
                     System.out.println("O halt 25165824");
