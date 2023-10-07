@@ -1,4 +1,0 @@
-       sw 0 1 five
-       lw 1 2 3
-start  add 1 2 1
-negl   .fill
