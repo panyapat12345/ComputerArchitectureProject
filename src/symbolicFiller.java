@@ -1,5 +1,5 @@
 import Exceptions.DuplicateLabel;
-import Exceptions.IllegalLabelFormat;
+import Exceptions.UndefinedLabel;
 import java.util.*;
 
 public class symbolicFiller {
@@ -41,7 +41,7 @@ public class symbolicFiller {
 
     private static void checkDuplicateLabel(String token){  // check duplicate line map
         if (line.get(token) != null)
-            throw new DuplicateLabel();
+            throw new DuplicateLabel("Line " + lineCounter + " : DuplicateLabel " + token);
     }
 
     private static boolean isNumber(String token){
@@ -67,12 +67,12 @@ public class symbolicFiller {
                 if (tokens[i+1].equals(".fill")){   // .fill (var|line)
                     line.put(tokens[i], lineCounter);
 
-                    if (isNumber(tokens[i+2]))  {
+                    if (isNumber(tokens[i+2]))  {   // add to var map
                         var.put(tokens[i], Integer.valueOf(tokens[i+2]));
-                    } else {
+                    } else {                        // search value from line
                         if (line.get(tokens[i+2]) != null)
                             var.put(tokens[i], line.get(tokens[i+2]));
-                        else    throw new IllegalLabelFormat();
+                        else    throw new UndefinedLabel("Line " + lineCounter + " : UndefinedLabel " + tokens[i+2]);
                     }
                     i += 3;
                 } else {        // Ins (line)
@@ -132,6 +132,11 @@ public class symbolicFiller {
 */
     }
 
+    private static void checkUndefinedLabel(String token){
+        if(line.get(token) == null)
+            throw new UndefinedLabel("Line " + lineCounter + " : UndefinedLabel " + token);
+    }
+
     private static List<String> fillLabels(){
         List<String> machineCodes = new ArrayList<>();
         lineCounter = 0;
@@ -140,12 +145,14 @@ public class symbolicFiller {
                 machineCodes.add(readLine[0] + " " + readLine[1] + " " + readLine[2] + " " + readLine[3]);
 
             } else if (readLine[0].equals("lw") || readLine[0].equals("sw") || readLine[0].equals("beq")){
-                if (isNumber(readLine[3]))
+                if (isNumber(readLine[3]))                                              // filed 3 is number
                     machineCodes.add(readLine[0] + " " + readLine[1] + " " + readLine[2] + " " + readLine[3]);
-                else if (readLine[0].equals("lw") || readLine[0].equals("sw")) {
-                    int offset = line.get(readLine[3]) - lineCounter;
+                else if (readLine[0].equals("lw") || readLine[0].equals("sw")) {        // filed 3 is label
+                    checkUndefinedLabel(readLine[3]);
+                    int offset = line.get(readLine[3]);
                     machineCodes.add(readLine[0] + " " + readLine[1] + " " + readLine[2] + " " + offset);
                 } else {        // beq
+                    checkUndefinedLabel(readLine[3]);
                     int offset = line.get(readLine[3]) - lineCounter - 1;
                     machineCodes.add(readLine[0] + " " + readLine[1] + " " + readLine[2] + " " + offset);
                 }
@@ -161,7 +168,7 @@ public class symbolicFiller {
         return machineCodes;
     }
 
-    public static String[] getMachineCode(String src) throws DuplicateLabel, IllegalLabelFormat{
+    public static String[] getMachineCode(String src) throws DuplicateLabel, UndefinedLabel {
         findLabels(ex1);
         normalize(ex1);
         List<String> machineCodes = fillLabels();
