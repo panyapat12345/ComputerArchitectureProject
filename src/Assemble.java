@@ -4,10 +4,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 public class Assemble {
-    public static void main(String[] args) {
 
-        String[] input = { "lw 0 1 7", "lw 1 2 3", "add 1 2 1", "beq 0 1 2", "beq 0 0 -3", "noop", "halt", "5", "-1",
+ String[] input = { "lw 0 1 7", "lw 1 2 3", "add 1 2 1", "beq 0 1 2", "beq 0 0 -3", "noop", "halt", "5", "-1",
                 "2", "jalr 2 5" };
+
+
+    public static void Assemblefuction(String[] input){ 
+        
         ArrayList<Integer> output = new ArrayList<>();
 
         for (int i = 0; i < input.length; i++) {
@@ -332,6 +335,13 @@ public class Assemble {
             System.out.println(fileName);
         } catch (IOException e) {
             System.err.println(e.getMessage());
-        }
+        }}
+
+
+
+    public static void main(String[] args) {
+
+       
+       
     }
 }
