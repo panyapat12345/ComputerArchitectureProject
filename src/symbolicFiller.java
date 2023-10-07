@@ -1,4 +1,5 @@
 import Exceptions.DuplicateLabel;
+import Exceptions.SyntaxError;
 import Exceptions.UndefinedLabel;
 
 import java.io.IOException;

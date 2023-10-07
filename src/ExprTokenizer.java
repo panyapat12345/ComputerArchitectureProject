@@ -1,3 +1,5 @@
+import Exceptions.SyntaxError;
+
 import java.util.NoSuchElementException;
 
 

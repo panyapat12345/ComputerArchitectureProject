@@ -1,4 +1,5 @@
 import Exceptions.DuplicateLabel;
+import Exceptions.SyntaxError;
 import Exceptions.UndefinedLabel;
 
 import java.io.BufferedWriter;
@@ -19,7 +20,7 @@ public class Assemble {
             String[] input = symbolicFiller.getMachineCode(src);
 
             for (int i = 0; i < input.length; i++) {
-                System.out.println("line " + i + " : " + input[i]);
+                System.out.print("line " + i + " : " + input[i] + " --> ");
                 if (input[i].charAt(0) == 'a') {
                     // System.out.println("R add");
                     String[] words = input[i].split(" ");
@@ -315,10 +316,10 @@ public class Assemble {
                     System.out.println("J jalr " + decimalCode  + " (" + binaryCode + ")");
                     output.add(decimalCode);
                 } else if (input[i].charAt(0) == 'h') {
-                    System.out.println("O halt 25165824");
+                    System.out.println("O halt 25165824  (1100000000000000000000000)");
                     output.add(25165824);
                 } else if (input[i].charAt(0) == 'n' && input[i].charAt(1) == 'o') {
-                    System.out.println("O noop 29360128");
+                    System.out.println("O noop 29360128  (1110000000000000000000000)");
                     output.add(29360128);
                 } else {
                     System.out.println(input[i]);
@@ -348,8 +349,6 @@ public class Assemble {
         }}
 
     public static void main(String[] args) {
-        //getMachineCodes("src/test_1.txt", "src/Assemblyoutput.txt");
-        getMachineCodes("src/Fibonucci.txt", "src/Assemblyoutput.txt");
        
     }
 }

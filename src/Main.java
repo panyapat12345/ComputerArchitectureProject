@@ -1,17 +1,15 @@
-import Exceptions.DuplicateLabel;
-import Exceptions.UndefinedLabel;
-
-import java.io.IOException;
-
 public class Main {
-    public static void main(String[] argv) throws SyntaxError, IOException {
-        try{
-            for (String line : symbolicFiller.getMachineCode("src/test_1.txt"))
-                System.out.println(line);
+    public static void main(String[] argv) {
+//        Assemble.getMachineCodes("src/testCases/test_1.txt", "src/testCases/Assemblyoutput.txt");
+//        Assemble.getMachineCodes("src/testCases/Fibonucci.txt", "src/testCases/Assemblyoutput.txt");
+//        Assemble.getMachineCodes("src/testCases/multiplytest.txt", "src/testCases/Assemblyoutput.txt");
+//        Assemble.getMachineCodes("src/testCases/testcombination.txt", "src/testCases/Assemblyoutput.txt");
+        Assemble.getMachineCodes("src/testCases/seriestest.txt", "src/testCases/Assemblyoutput.txt");
 
-        } catch (IOException | SyntaxError | DuplicateLabel | UndefinedLabel e) {
-            // System.err.println(e);
-            throw e;
-        }
+        System.out.println();
+        System.out.println();
+        System.out.println();
+
+        Simulator.simulate("src/testCases/Assemblyoutput.txt");
     }
 }

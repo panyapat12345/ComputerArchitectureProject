@@ -169,7 +169,7 @@ public class Simulator {
         }
     }
 
-    private static void simulate(String src){       // machine codes only
+    public static void simulate(String src){       // machine codes only
         int instructionCount = 0;
         try {
             load(src);
@@ -198,7 +198,7 @@ public class Simulator {
     }
 
     public static void main(String[] args) {
-        String readPath = "src/mechineCode.txt";
+        String readPath = "src/Assemblyoutput.txt";
         simulate(readPath);
     }
 
