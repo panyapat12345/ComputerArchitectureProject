@@ -1,5 +1,7 @@
 import Exceptions.DuplicateLabel;
 import Exceptions.UndefinedLabel;
+
+import java.io.IOException;
 import java.util.*;
 
 public class symbolicFiller {
@@ -168,9 +170,10 @@ public class symbolicFiller {
         return machineCodes;
     }
 
-    public static String[] getMachineCode(String src) throws DuplicateLabel, UndefinedLabel {
-        findLabels(ex1);
-        normalize(ex1);
+    public static String[] getMachineCode(String src) throws DuplicateLabel, UndefinedLabel, SyntaxError, IOException {
+        String[] tokens = getTokenArray.getTokens(src);
+        findLabels(tokens);
+        normalize(tokens);
         List<String> machineCodes = fillLabels();
         return machineCodes.toArray(new String[0]);
     }
@@ -217,8 +220,8 @@ public class symbolicFiller {
         printAllInstructions(ex1);
         System.out.println();
 
-        for (String s : getMachineCode("/input.txt"))
-            System.out.println(s);
+        //for (String s : getMachineCode("/input.txt"))
+        //    System.out.println(s);
 
         System.out.println();
         System.out.println("line : " + line);
