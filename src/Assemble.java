@@ -1,4 +1,5 @@
 import Exceptions.DuplicateLabel;
+import Exceptions.Exit;
 import Exceptions.SyntaxError;
 import Exceptions.UndefinedLabel;
 
@@ -12,8 +13,12 @@ public class Assemble {
  String[] input = { "lw 0 1 7", "lw 1 2 3", "add 1 2 1", "beq 0 1 2", "beq 0 0 -3", "noop", "halt", "5", "-1",
                 "2", "jalr 2 5" };
 
+    private static void exit(int type){
+        if(type == 1)   throw new Exit();
+    }
 
-    public static void getMachineCodes(String src, String dest){
+
+    public static void getMachineCodes(String src, String dest) throws Exit {
         ArrayList<Integer> output = new ArrayList<>();
 
         try {
@@ -327,9 +332,11 @@ public class Assemble {
                     output.add(intinput);
                 }
             }
+            exit(0);
         } catch (SyntaxError | IOException | DuplicateLabel | UndefinedLabel e) {
-            output.clear();
+            // output.clear();
             System.err.println(e);
+            exit(1);
         }
 
         System.out.println(output);
@@ -346,9 +353,6 @@ public class Assemble {
             System.out.println(dest);
         } catch (IOException e) {
             System.err.println(e.getMessage());
-        }}
-
-    public static void main(String[] args) {
-       
+        }
     }
 }
