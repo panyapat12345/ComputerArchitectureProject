@@ -13,6 +13,13 @@ public class Simulator {
     private static stateType state = new stateType(0, new int[NUMMEMORY], new int[NUMREGS], 0);;
     private static int instruction;
     private static final int sp = 2;
+    private static int cause;           // 0 : NoLoadedMachineCode
+                                        // 1 : NoSuchDynamicData
+                                        // 2 : PCAddressOutOfBound
+                                        // 3 : StackOverflow
+                                        // 4 : MemoryAddressOutOfBound
+                                        // 5 : Halted
+                                        // 6 : FileReaderException
 
     private static class stateType {
         public int pc;
@@ -41,6 +48,11 @@ public class Simulator {
             }
             System.out.print("end state\n");
         }
+
+    }
+
+    private static void exit(){
+        throw new Exit();
     }
 
     public static void load(String readPath) {
@@ -58,17 +70,22 @@ public class Simulator {
                 state.mem[state.numMemory] = Integer.valueOf(line);
                 System.out.println("memory[" + state.numMemory + "]=" + state.mem[state.numMemory]);
             }
-            if(state.numMemory == 0)    throw new NoLoadedMachineCode();    // check if have no load any machine codes
+            if(state.numMemory == 0){       // check if have no load any machine codes
+                cause = 0;                  // NoLoadedMachineCode
+                exit();
+            }
 
             // print state test
             //state.printState();
 
         } catch (NoSuchFileException | AccessDeniedException | FileNotFoundException e) {
             System.err.println("error: can't open file " + readPath);
-            exit(1);
+            cause = 6;
+            exit();
         } catch (IOException e) {
             System.err.println("IOExcertion: " + e);
-            exit(1);
+            cause = 6;
+            exit();
         }
     }
 
@@ -101,8 +118,14 @@ public class Simulator {
         if(state.pc >= 0 && state.pc <= 65535){
             if(state.pc < state.reg[sp] + 65536)
                 instruction = state.mem[state.pc];
-            else    throw new NoSuchDynamicData();
-        } else  throw new PCAddressOutOfBound();
+            else {
+                cause = 1;          // NoSuchDynamicData
+                exit();
+            }
+        } else  {
+            cause = 2;              // PCAddressOutOfBound
+            exit();
+        }
     }
 
     private static int[] readReg(){
@@ -114,17 +137,27 @@ public class Simulator {
 
     private static void writeReg(int writeReg, int data){
         if(writeReg != 0)   state.reg[writeReg] = data;
-        if(state.reg[sp] + 65536 < state.numMemory)     throw new StackOverflow();      // check overflow
+        if(state.reg[sp] + 65536 < state.numMemory) {       // check overflow
+            cause = 3;              // StackOverflow
+            exit();
+        }
     }
 
     private static int readMem(int address){
         if(isInBoundAddress(address))   return state.mem[address];
-        else    throw new MemoryAddressOutOfBound();
+        else {
+            cause = 4;          // MemoryAddressOutOfBound
+            exit();
+            return 0;
+        }
     }
 
     private static void writeMem(int address, int writeData){
         if(isInBoundAddress(address))   state.mem[address] = writeData;
-        else    throw new MemoryAddressOutOfBound();
+        else {
+            cause = 4;          // MemoryAddressOutOfBound
+            exit();
+        }
     }
 
     private static void oneClockExcute(){
@@ -163,7 +196,8 @@ public class Simulator {
             state.pc = data[0];                                                         // jump
         } else if(opcode == 0b110){     // halt
             state.pc++;
-            throw new Halted();         // send halt signal
+            cause = 5;                  // Halted
+            exit();
         } else {                        // opcode = 0b111   noop
             state.pc++;
         }
@@ -179,33 +213,29 @@ public class Simulator {
                 oneClockExcute();
             }
 
-        } catch(Exit e){      // stop simulate
-            return;
-        } catch(ArrayIndexOutOfBoundsException e){
-            System.out.println("out of memory.");
-        } catch(PCAddressOutOfBound e){
-            System.out.println("pc address out of bound.");
-        } catch(StackOverflow e){
-            System.out.println("stack overflow.");
-        } catch(MemoryAddressOutOfBound e){
-            System.out.println("memory address out of bound.");
-        } catch(Halted | NoLoadedMachineCode | NoSuchDynamicData e){
-            System.out.println("machine halted");
-            System.out.println("total of " + instructionCount + " instructions executed");
-            System.out.println("final state of machine:");
-            state.printState();
+        } catch(Exit e){                    // Exception handler
+            if(cause == 0) {                // NoLoadedMachineCode
+                System.err.println("not have a machine code for loading");
+            } else if(cause == 1){          // NoSuchDynamicData
+                System.err.println("not have a dynamic data");
+            } else if(cause == 2){          // PCAddressOutOfBound
+                System.err.println("pc address out of bound.");
+            } else if(cause == 3){           // StackOverflow
+                System.err.println("stack overflow.");
+            } else if(cause == 4){           // MemoryAddressOutOfBound
+                System.err.println("memory address out of bound.");
+            } else if(cause == 5){           // Halted
+                System.out.println("machine halted");
+                System.out.println("total of " + instructionCount + " instructions executed");
+                System.out.println("final state of machine:");
+                state.printState();
+            } else if(cause == 6){           // FileReaderException
+                System.err.println("FileReaderException occurred");
+            }
         }
     }
 
-    public static void main(String[] args) {
-        String readPath = "src/Assemblyoutput.txt";
-        simulate(readPath);
-    }
-
-    private static void exit(int type){
-        if (type == 1)  throw new Exit();
-    }
-
+    // for testing
     private static String bin(int value){
         String s = String.format("%32s", Integer.toBinaryString(value)).replace(' ', '0');
         StringBuilder result = new StringBuilder();

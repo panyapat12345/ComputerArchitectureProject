@@ -1,10 +1,10 @@
 public class Main {
     public static void main(String[] argv) {
-//        Assemble.getMachineCodes("src/testCases/test_1.txt", "src/testCases/Assemblyoutput.txt");
+        Assemble.getMachineCodes("src/testCases/test_1.txt", "src/testCases/Assemblyoutput.txt");
 //        Assemble.getMachineCodes("src/testCases/Fibonucci.txt", "src/testCases/Assemblyoutput.txt");
 //        Assemble.getMachineCodes("src/testCases/multiplytest.txt", "src/testCases/Assemblyoutput.txt");
 //        Assemble.getMachineCodes("src/testCases/testcombination.txt", "src/testCases/Assemblyoutput.txt");
-        Assemble.getMachineCodes("src/testCases/seriestest.txt", "src/testCases/Assemblyoutput.txt");
+//        Assemble.getMachineCodes("src/testCases/seriestest.txt", "src/testCases/Assemblyoutput.txt");
 
         System.out.println();
         System.out.println();
