@@ -7,12 +7,12 @@ import java.io.IOException;
 import Exceptions.*;
 
 public class Simulator {
-    private static final int NUMMEMORY = 65536; /* maximum number of words in memory */
-    private static final int NUMREGS = 8; /* number of machine registers */
+    private static final int NUMMEMORY = 65536; /** maximum number of words in memory */
+    private static final int NUMREGS = 8; /** number of machine registers */
     // inti for simulate
     private static stateType state = new stateType(0, new int[NUMMEMORY], new int[NUMREGS], 0);;
     private static int instruction;
-    private static final int sp = 2;
+    private static final int sp = 2;    /** reg use for stack pointer */
     private static int cause;           // 0 : NoLoadedMachineCode
                                         // 1 : NoSuchDynamicData
                                         // 2 : PCAddressOutOfBound
@@ -21,6 +21,7 @@ public class Simulator {
                                         // 5 : Halted
                                         // 6 : FileReaderException
 
+    /** class for keep all states */
     private static class stateType {
         public int pc;
         public int[] mem;
@@ -34,6 +35,7 @@ public class Simulator {
             this.numMemory = numMemory;
         }
 
+        /** print current values of state */
         public void printState(){
             int i;
             System.out.print("\n@@@\nstate:\n");
@@ -51,15 +53,17 @@ public class Simulator {
 
     }
 
+    /** use for exit simulator */
     private static void exit(){
         throw new Exit();
     }
 
+    /** load machine codes from the given readPath */
     public static void load(String readPath) {
         Path readFile = Paths.get(readPath);
         Charset charset = StandardCharsets.UTF_8;
 
-        // reset state
+        // reset all states
         state = new stateType(0, new int[NUMMEMORY], new int[NUMREGS], 0);
 
         // read in the entire machine-code file into memory
@@ -67,101 +71,118 @@ public class Simulator {
             String line = null;
 
             for(; (line = reader.readLine()) != null; state.numMemory++) {
+                // store each lines in the memory
                 state.mem[state.numMemory] = Integer.valueOf(line);
+                // print a value that read
                 System.out.println("memory[" + state.numMemory + "]=" + state.mem[state.numMemory]);
             }
-            if(state.numMemory == 0){       // check if have no load any machine codes
-                cause = 0;                  // NoLoadedMachineCode
+            if(state.numMemory == 0){       // check that have any machine codes loaded?
+                cause = 0;                  // NoLoadedMachineCode occur
                 exit();
             }
 
-            // print state test
-            //state.printState();
-
+        // check that have any exceptions occur?
         } catch (NoSuchFileException | AccessDeniedException | FileNotFoundException e) {
             System.err.println("error: can't open file " + readPath);
-            cause = 6;
+            cause = 6;      // FileReaderException occur
             exit();
         } catch (IOException e) {
             System.err.println("IOExcertion: " + e);
-            cause = 6;
+            cause = 6;      // FileReaderException occur
             exit();
         }
     }
 
-    // component implement
+    /** -------------------- component implement ---------------------------- */
+
+    /** calculate offset from the current instruction */
     private static int offset(){
         int offset = instruction & 0xffff;
+        // signed extending to 32 bits
         if((offset>>15) % 2 == 0)    return offset;
         else    return offset | 0xffff0000;
     }
 
+    /** add two values as ALU */
     private static int addALU(int a, int b){
         return a+b;
     }
 
+    /** nand two values as ALU */
     private static int nandALU(int a, int b){
         return ~(a & b);
     }
 
+    /** calculate zero signal as ALU from two values */
     private static int zeroALU(int a, int b){
         int ALUOutput = a-b;
         return ALUOutput == 0? 1 : 0;
     }
 
+    /** check that the given address is in bound? */
     private static boolean isInBoundAddress(int address){
         if(address >= 0 && address <= 65535)    return true;
         else    return false;
     }
 
-    private static void fecthInstruction(){
-        if(state.pc >= 0 && state.pc <= 65535){
+    /** fetch an instruction according to PC */
+    private static void fetchInstruction(){
+        if(isInBoundAddress(state.pc)){
+            // check that it reach to the stack pointer?
             if(state.pc < state.reg[sp] + 65536)
+                // fetching an instruction
                 instruction = state.mem[state.pc];
             else {
-                cause = 1;          // NoSuchDynamicData
+                cause = 1;          // NoSuchDynamicData occur
                 exit();
             }
         } else  {
-            cause = 2;              // PCAddressOutOfBound
+            cause = 2;              // PCAddressOutOfBound occur
             exit();
         }
     }
 
+    /** read values of rs and rt from the register */
     private static int[] readReg(){
-        int readReg1 = (instruction >> 19) & 0b111;     // rs
-        int readReg2 = (instruction >> 16) & 0b111;     // rt
-
-        return new int []{state.reg[readReg1], state.reg[readReg2]};
+        int rs = (instruction >> 19) & 0b111;
+        int rt = (instruction >> 16) & 0b111;
+        return new int []{state.reg[rs], state.reg[rt]};
     }
 
+    /** write the register according to the given writeReg with the given data */
     private static void writeReg(int writeReg, int data){
+        // check that the writeReg is not x0?
         if(writeReg != 0)   state.reg[writeReg] = data;
-        if(state.reg[sp] + 65536 < state.numMemory) {       // check overflow
-            cause = 3;              // StackOverflow
+        // check overflow is occurred from use stack pointer against conditions?
+        if(state.reg[sp] + 65536 < state.numMemory) {
+            cause = 3;              // StackOverflow occur
             exit();
         }
     }
 
+    /** read the value of the given address from the memory */
     private static int readMem(int address){
         if(isInBoundAddress(address))   return state.mem[address];
         else {
-            cause = 4;          // MemoryAddressOutOfBound
+            cause = 4;          // MemoryAddressOutOfBound occur
             exit();
-            return 0;
+            return 0;           // fix bug
         }
     }
 
+    /** write the memory according to the given address with the given writeData */
     private static void writeMem(int address, int writeData){
         if(isInBoundAddress(address))   state.mem[address] = writeData;
         else {
-            cause = 4;          // MemoryAddressOutOfBound
+            cause = 4;          // MemoryAddressOutOfBound occur
             exit();
         }
     }
 
-    private static void oneClockExcute(){
-        fecthInstruction();
+    /** simulate as the instruction execution of single cycle CPU */
+    private static void oneClockExecute(){
+        fetchInstruction();
+        // read values fo rs and rt from the register as data[0] and data[1]
         int[] data = readReg();
         int opcode = (instruction >> 22) & 0b111;
         int rs = (instruction >> 19) & 0b111;
@@ -170,49 +191,66 @@ public class Simulator {
         //System.out.println(state.pc + " : " + opcode + " " + rs + " " + rt + " " + rd);
 
         if(opcode == 0b000){            // add
+            // calculate rs + rt
             int ALUOutput = addALU(data[0], data[1]);
+            // store in the register
             writeReg(rd, ALUOutput);
             state.pc++;
         } else if(opcode == 0b001){     // nand
+            // calculate rs nand rt
             int ALUOutput = nandALU(data[0], data[1]);
+            // store in the register
             writeReg(rd, ALUOutput);
             state.pc++;
         } else if(opcode == 0b010){     //lw
-            int ALUOutput = addALU(data[0], offset()), readData;
-            if(rs == sp)    readData = readMem(ALUOutput + 65536);      // for stack pointer
+            // find address
+            int ALUOutput = addALU(data[0], offset());
+            // access the memory
+            int readData;
+            if(rs == sp)    readData = readMem(ALUOutput + 65536);      // for stack pointer, must shift the address
             else    readData = readMem(ALUOutput);
+            // store in the register
             writeReg(rt, readData);
             state.pc++;
         } else if(opcode == 0b011){     // sw
-            int ALUOutput = addALU(data[0], offset()), readData;
-            if(rs == sp)    writeMem(ALUOutput + 65536, data[1]);       // for stack pointer
+            // find address
+            int ALUOutput = addALU(data[0], offset());
+            // store rt in the memory
+            if(rs == sp)    writeMem(ALUOutput + 65536, data[1]);       // for stack pointer, must shift the address
             else    writeMem(ALUOutput, data[1]);
             state.pc++;
         } else if(opcode == 0b100){     // beq
-            if(zeroALU(data[0], data[1]) == 1)   state.pc = state.pc + 1 +offset();     // jump
+            // if zero signal is 1 then the PC jump
+            if(zeroALU(data[0], data[1]) == 1)   state.pc = state.pc + 1 +offset();
             else    state.pc++;
         } else if(opcode == 0b101){     // jalr
+            // store a returned address
             writeReg(rt, state.pc + 1);
-            state.pc = data[0];                                                         // jump
+            // PC = rs (jump)
+            state.pc = data[0];
         } else if(opcode == 0b110){     // halt
             state.pc++;
-            cause = 5;                  // Halted
+            cause = 5;                  // Halted occur
             exit();
         } else {                        // opcode = 0b111   noop
             state.pc++;
         }
     }
 
+    /** simulate according to the loaded machine codes from the given src path */
     public static void simulate(String src){       // machine codes only
         int instructionCount = 0;
         try {
+            // load machine codes
             load(src);
+            // execute each machine code
             while(true){
                 state.printState();
                 instructionCount++;
-                oneClockExcute();
+                oneClockExecute();
             }
 
+        // handle with exceptions
         } catch(Exit e){                    // Exception handler
             if(cause == 0) {                // NoLoadedMachineCode
                 System.err.println("not have a machine code for loading");
@@ -235,7 +273,7 @@ public class Simulator {
         }
     }
 
-    // for testing
+    // for testing only
     private static String bin(int value){
         String s = String.format("%32s", Integer.toBinaryString(value)).replace(' ', '0');
         StringBuilder result = new StringBuilder();
