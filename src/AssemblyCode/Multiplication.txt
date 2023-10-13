@@ -1,17 +1,17 @@
-        lw      0   2  	mcand   set x2 = 32766 
-        lw      0   3  	mplier  set x3 = 10383
-        lw 	    0   4   uno	    set x4 = 1 
-	    lw 	    0   7	last	set x7 = 2^30
-again   nand    3   4  	6       set x6 = nand(x3,x4)
-        nand    6   6   6       set x6 = nand(x6,x6)
-        beq     6   0   not1    if x6 = 0 jumpTo not1
-        add     1   2  	1       set x1 += x2 for result
-not1    add     4   4   4       shift x4 left
-        add     2   2  	2       shift x2 left
-        beq     4   7   exit    if x4 = x7 exit
-        beq    	0   0   again
-exit    halt
-mcand   .fill   32766
-mplier  .fill   10383
-uno     .fill   1
-last	.fill	1073741824
+lw 0 2 mcand                    //set x2 = 32766 
+lw 0 3 mplier                   //set x3 = 10383
+lw 0 4 uno	                //set x4 = 1 
+lw 0 7 last	                //set x7 = 2^30
+again nand 3 4 6                //set x6 = nand(x3,x4)
+nand 6 6 6                      //set x6 = nand(x6,x6)
+beq 6 0 not1                    //if x6 = 0 jump to not1
+add 1 2 1                       //set x1 += x2 for result
+not1 add 4 4 4                  //shift x4 left
+add 2 2 2               //shift x2 left
+beq 4 7 exit                //if x4 = x7 go to exit
+beq 0 0 again               //go to again
+exit halt                       //end the program
+mcand   .fill   32766           //ตัวตั้ง
+mplier  .fill   10383           //ตัวคูณ
+uno     .fill   1               //ค่าคงที่ 1 
+last	.fill	1073741824      
