@@ -7,9 +7,9 @@ nand 6 6 6                      //set x6 = nand(x6,x6)
 beq 6 0 not1                    //if x6 = 0 jump to not1
 add 1 2 1                       //set x1 += x2 for result
 not1 add 4 4 4                  //shift x4 left
-add 2 2 2               //shift x2 left
-beq 4 7 exit                //if x4 = x7 go to exit
-beq 0 0 again               //go to again
+add 2 2 2                       //shift x2 left
+beq 4 7 exit                    //if x4 = x7 go to exit
+beq 0 0 again                   //go to again
 exit halt                       //end the program
 mcand   .fill   32766           //ตัวตั้ง
 mplier  .fill   10383           //ตัวคูณ
