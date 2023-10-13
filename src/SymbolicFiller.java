@@ -5,7 +5,7 @@ import Exceptions.UndefinedLabel;
 import java.io.IOException;
 import java.util.*;
 
-public class symbolicFiller {
+public class SymbolicFiller {
     /** use for tracking labels */
     private static Map<String, Integer> line = new HashMap<>(), var = new HashMap<>();
     /** all instructions are allowed */
@@ -196,7 +196,7 @@ public class symbolicFiller {
     /** delete all labels in assembly languages and replace they to a value they should be */
     public static String[] getMachineCode(String src) throws DuplicateLabel, UndefinedLabel, SyntaxError, IOException {
         // get all tokens from tokenizer
-        String[] tokens = getTokenArray.getTokens(src);
+        String[] tokens = GetTokenArray.getTokens(src);
         findLabels(tokens);
         normalize(tokens);
         List<String> machineCodes = fillLabels();

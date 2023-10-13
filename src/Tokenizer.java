@@ -3,11 +3,11 @@ import Exceptions.SyntaxError;
 import java.util.NoSuchElementException;
 
 
-class ExprTokenizer {
+class Tokenizer {
     private String src;
     private int pos;
     private String next;
-    public ExprTokenizer(String src) {
+    public Tokenizer(String src) {
         this.src = src;
         pos = 0;
         computeNext();

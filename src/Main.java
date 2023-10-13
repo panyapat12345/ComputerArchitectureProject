@@ -3,7 +3,7 @@ import Exceptions.Exit;
 public class Main {
     public static void main(String[] argv) {
         try {
-            Assemble.getMachineCodes("src/testCases/test_1.txt", "src/testCases/Assemblyoutput.txt");
+            Assembler.getMachineCodes("src/testCases/test_1.txt", "src/testCases/Assemblyoutput.txt");
 //            Assemble.getMachineCodes("src/testCases/Fibonucci.txt", "src/testCases/Assemblyoutput.txt");
 //            Assemble.getMachineCodes("src/testCases/multiplytest.txt", "src/testCases/Assemblyoutput.txt");
 //            Assemble.getMachineCodes("src/testCases/testcombination.txt", "src/testCases/Assemblyoutput.txt");

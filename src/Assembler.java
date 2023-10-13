@@ -8,7 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class Assemble {
+public class Assembler {
 
     String[] input = { "lw 0 1 7", "lw 1 2 3", "add 1 2 1", "beq 0 1 2", "beq 0 0 -3", "noop", "halt", "5", "-1",
             "2", "jalr 2 5" };
@@ -22,7 +22,7 @@ public class Assemble {
         ArrayList<Integer> output = new ArrayList<>();
 
         try {
-            String[] input = symbolicFiller.getMachineCode(src);
+            String[] input = SymbolicFiller.getMachineCode(src);
             // ฟังก์ชันรับอินพุตเป็น arrey of string
             // for loop ไล่ทำแต่ละสมาชิกของอินพุต
             for (int i = 0; i < input.length; i++) {

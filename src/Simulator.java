@@ -257,11 +257,11 @@ public class Simulator {
             } else if(cause == 1){          // NoSuchDynamicData
                 System.err.println("not have a dynamic data");
             } else if(cause == 2){          // PCAddressOutOfBound
-                System.err.println("pc address out of bound.");
+                System.err.println("pc address out of bound");
             } else if(cause == 3){           // StackOverflow
-                System.err.println("stack overflow.");
+                System.err.println("stack overflow");
             } else if(cause == 4){           // MemoryAddressOutOfBound
-                System.err.println("memory address out of bound.");
+                System.err.println("memory address out of bound");
             } else if(cause == 5){           // Halted
                 System.out.println("machine halted");
                 System.out.println("total of " + instructionCount + " instructions executed");

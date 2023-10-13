@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 
-public class getTokenArray {
+public class GetTokenArray {
     private static int i, n, lineCounter;
 
 
@@ -22,7 +22,7 @@ public class getTokenArray {
 
     private static   String[] getTokenArrays(String input) throws SyntaxError {
         List<String> tokenList = new ArrayList<>();
-        ExprTokenizer tokenizer = new ExprTokenizer(input);
+        Tokenizer tokenizer = new Tokenizer(input);
         String instructionType = "";
 
         while (tokenizer.hasNextToken()) {
@@ -211,7 +211,7 @@ public class getTokenArray {
         for (int i = 0; i < program.size(); i++) {
             try {
                 String inputLine = program.get(i);
-                String[] tokens = getTokenArray.getTokenArrays(inputLine);
+                String[] tokens = GetTokenArray.getTokenArrays(inputLine);
                 for(String T : tokens){
                     tokenresult.add(T);
                 }
