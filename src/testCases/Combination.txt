@@ -1,0 +1,50 @@
+lw 0 6 one           // x6 = 1
+lw 0 1 n             // Load n to x1
+lw 0 2 r             // Load r to x2
+sw 5 1 stack         // Store n on the stack
+add 5 6 5            // Increase stack pointer
+sw 5 2 stack         // Store r on the stack
+add 5 6 5            // Increase stack pointer
+lw 0 4 comAdr        // Prepare to call the Comb function
+jalr 4 7             // Call the Comb function
+end halt             // End the program
+Comb lw 0 6 neg1     // x6 = -1
+add 5 6 5            // Decrease stack pointer
+lw 5 2 stack         // Load r from the stack
+add 5 6 5            // Decrease stack pointer
+lw 5 1 stack         // Load n from the stack
+beq 0 2 Base         // If r = 0, go to the Base
+beq 1 2 Base         // If n = r, go to the Base
+lw 0 6 neg1          // x6 = -1
+add 1 6 4            // Calculate n-1 and store it in x4
+lw 0 6 one           // x6 = 1
+sw 5 4 stack         // Store n-1 on the stack
+add 5 6 5            // Increase stack pointer
+lw 0 6 neg1          // x6 = -1
+add 2 6 4            // Calculate r-1 and store it in x4
+lw 0 6 one           // x6 = 1
+sw 5 4 stack         // Store r-1 on the stack
+add 5 6 5            // Increase stack pointer
+lw 0 6 neg1          // x6 = -1
+add 1 6 4            // Calculate n-1 and store it in x4
+lw 0 6 one           // x6 = 1
+sw 5 4 stack         // Store n-1 on the stack
+add 5 6 5            // Increase stack pointer
+add 2 0 4            // Store r in x4
+sw 5 4 stack         // Store r on the stack
+add 5 6 5            // Increase stack pointer
+lw 0 4 comAdr        // Prepare to call the Comb function
+jalr 4 6             // Jump to the Comb function
+Base lw 0 6 one      // x6 = 1
+add 3 6 3            // Increment x3 by 1 (Base case)
+lw 0 4 comAdr        // Store the address of the Base in x4
+beq 5 0 end          // If the stack is empty, go to the end of the program
+jalr 4 6             // If the stack is not empty, save the return address in x6
+jalr 7 6             // Return from the function
+comAdr .fill Comb    // Fill the address of the Comb function
+one .fill 1          // Define the value 1
+neg1 .fill -1        // Define the value -1
+bcAdr .fill Base   //Fill the address of the Base
+n .fill 7 input      // Define the value of n
+r .fill 3 input      // Define the value of r
+stack .fill 0        // Initialize the stack
