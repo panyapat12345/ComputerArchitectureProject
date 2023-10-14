@@ -1,24 +1,17 @@
-lw 0 2 mcand                    //set x2 = 32766 
-lw 0 3 mplier                   //set x3 = 10383
-lw 0 4 uno	                    //set x4 = 1 
-lw 0 7 last	                    //set x7 = 2^30
-again nand 3 4 6                //set x6 = nand(x3,x4)
-nand 6 6 6                      //set x6 = nand(x6,x6)
-beq 6 0 not1                    //if x6 = 0 jump to not1
-add 1 2 1                       //set x1 += x2 for result
-not1 add 4 4 4                  //shift x4 left
-add 2 2 2                       //shift x2 left
-beq 4 7 exit                    //if x4 = x7 go to exit
-beq 0 0 again                   //go to again
-exit halt                       //end the program
-mcand .fill 32766               //ตัวตั้ง
-mplier .fill 10383              //ตัวคูณ
-uno .fill 1                     //ค่าคงที่ 1 
-last .fill 1073741824           
-
-
-
-
-
-
-
+lw 0 3 one                  //set x3 = 1
+lw 0 2 sign                 //set x2 = 1073741824 
+lw 0 6 mcand                //set x6 = mcand 
+lw 0 7 mplier               //set x7 = mplier 
+mul nand 7 3 4              //(plier nand iterator) = temp
+nand 4 4 4                  //(temp nand temp) = temp
+beq 4 0 oat                 //if(temp == zero) go to L1
+add 1 6 1                   //result = result + cand
+oat add 3 3 3               //iterator = iterator + iterator 
+add 6 6 6                   //cand = cand + cand 
+beq 2 3 done                //if(iterator == sign) go to exit 
+beq 0 0 mul                 //jump to multiplication  
+done  halt                  //end the program
+sign .fill 1073741824       //จำนวนเต็มบวกที่มากที่สุดที่เป็นไปได้
+one .fill 1                 //ค่าคงที่ 1
+mcand  .fill 32766          //ตัวตั้ง
+mplier .fill 10383          //ตัวคูณ
